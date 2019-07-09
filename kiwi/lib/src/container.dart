@@ -68,7 +68,7 @@ class Container {
     _namedProviders[name]?.remove(T);
   }
 
-  /// Attemps to resolve the type [T].
+  /// Attempts to resolve the type [T].
   ///
   /// If [name] is set, the instance or builder registered with this
   /// name will be get.
@@ -115,33 +115,49 @@ class Container {
   }
 }
 
-class _Provider<T> {
-  _Provider.instance(this.object)
-      : instanceBuilder = null,
-        _oneTime = false;
+abstract class _Provider<T> {
+  _Provider();
 
-  _Provider.factory(this.instanceBuilder) : _oneTime = false;
+  T get(Container container);
 
-  _Provider.singleton(this.instanceBuilder) : _oneTime = true;
+  factory _Provider.instance(T object) => _InstanceProvider(object);
+
+  factory _Provider.factory(Factory<T> instanceBuilder) =>
+      _FactoryProvider(instanceBuilder);
+
+  factory _Provider.singleton(Factory<T> instanceBuilder) =>
+      _SingletonProvider(instanceBuilder);
+}
+
+class _InstanceProvider<T> extends _Provider<T> {
+  _InstanceProvider(this.instance) : assert(instance != null);
+
+  final T instance;
+
+  @override
+  T get(Container container) => instance;
+}
+
+class _FactoryProvider<T> extends _Provider<T> {
+  _FactoryProvider(this.instanceBuilder) : assert(instanceBuilder != null);
 
   final Factory<T> instanceBuilder;
-  T object;
-  bool _oneTime = false;
 
+  @override
+  T get(Container container) => instanceBuilder(container);
+}
+
+class _SingletonProvider<T> extends _Provider<T> {
+  _SingletonProvider(this.instanceBuilder) : assert(instanceBuilder != null);
+
+  final Factory<T> instanceBuilder;
+  T instance;
+
+  @override
   T get(Container container) {
-    if (_oneTime && instanceBuilder != null) {
-      object = instanceBuilder(container);
-      _oneTime = false;
+    if (instance == null) {
+      instance = instanceBuilder(container);
     }
-
-    if (object != null) {
-      return object;
-    }
-
-    if (instanceBuilder != null) {
-      return instanceBuilder(container);
-    }
-
-    return null;
+    return instance;
   }
 }

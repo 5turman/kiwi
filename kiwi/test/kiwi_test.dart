@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   Container container = Container();
-  
+
   group('Silent=true tests', () {
     setUp(() {
       container.clear();
@@ -14,6 +14,21 @@ void main() {
       Container c1 = Container();
       Container c2 = Container();
       expect(c1, isNot(c2));
+    });
+
+    test('factories and instancies should be not null', () {
+      expect(
+        () => container.registerInstance(null),
+        throwsA(TypeMatcher<AssertionError>()),
+      );
+      expect(
+        () => container.registerFactory(null),
+        throwsA(TypeMatcher<AssertionError>()),
+      );
+      expect(
+        () => container.registerSingleton(null),
+        throwsA(TypeMatcher<AssertionError>()),
+      );
     });
 
     test('instances should be resolved', () {
