@@ -1,18 +1,9 @@
 /// Signature for a builder which creates an object of type [T].
 typedef T Factory<T>(Container container);
 
-/// A simple service container.
+/// A simple object container.
 class Container {
-  /// Creates a scoped container.
-  Container.scoped()
-      : _namedProviders = Map<String, Map<Type, _Provider<Object>>>();
-
-  static final Container _instance = new Container.scoped();
-
-  /// Always returns a singleton representing the only container to be alive.
-  factory Container() => _instance;
-
-  final Map<String, Map<Type, _Provider<Object>>> _namedProviders;
+  final _namedProviders = Map<String, Map<Type, _Provider<Object>>>();
 
   /// Whether ignoring assertion errors in the following cases:
   /// * if you register the same type under the same name a second time.
@@ -109,10 +100,11 @@ class Container {
 
   void _setProvider<T>(String name, _Provider<T> provider) {
     assert(
-        silent ||
-            (!_namedProviders.containsKey(name) ||
-                !_namedProviders[name].containsKey(T)),
-        _assertRegisterMessage<T>('already', name),);
+      silent ||
+          (!_namedProviders.containsKey(name) ||
+              !_namedProviders[name].containsKey(T)),
+      _assertRegisterMessage<T>('already', name),
+    );
 
     _namedProviders.putIfAbsent(name, () => Map<Type, _Provider<Object>>())[T] =
         provider;

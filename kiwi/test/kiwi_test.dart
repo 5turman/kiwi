@@ -3,17 +3,17 @@ import 'package:test/test.dart';
 
 void main() {
   Container container = Container();
-
+  
   group('Silent=true tests', () {
     setUp(() {
       container.clear();
       container.silent = true;
     });
 
-    test('containers should be the same', () {
+    test('containers should be different', () {
       Container c1 = Container();
       Container c2 = Container();
-      expect(c1, c2);
+      expect(c1, isNot(c2));
     });
 
     test('instances should be resolved', () {
