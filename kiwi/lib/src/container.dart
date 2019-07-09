@@ -25,7 +25,9 @@ class Container {
     S instance, {
     String name,
   }) {
-    _setProvider(name, _Provider<S>.instance(instance));
+    assert(instance != null);
+    final provider = _Provider<S>.singleton((container) => instance);
+    _setProvider(name, provider);
   }
 
   /// Registers a factory into the container.
@@ -120,22 +122,11 @@ abstract class _Provider<T> {
 
   T get(Container container);
 
-  factory _Provider.instance(T object) => _InstanceProvider(object);
-
   factory _Provider.factory(Factory<T> instanceBuilder) =>
       _FactoryProvider(instanceBuilder);
 
   factory _Provider.singleton(Factory<T> instanceBuilder) =>
       _SingletonProvider(instanceBuilder);
-}
-
-class _InstanceProvider<T> extends _Provider<T> {
-  _InstanceProvider(this.instance) : assert(instance != null);
-
-  final T instance;
-
-  @override
-  T get(Container container) => instance;
 }
 
 class _FactoryProvider<T> extends _Provider<T> {
@@ -150,13 +141,14 @@ class _FactoryProvider<T> extends _Provider<T> {
 class _SingletonProvider<T> extends _Provider<T> {
   _SingletonProvider(this.instanceBuilder) : assert(instanceBuilder != null);
 
-  final Factory<T> instanceBuilder;
+  Factory<T> instanceBuilder;
   T instance;
 
   @override
   T get(Container container) {
-    if (instance == null) {
+    if (instance == null && instanceBuilder != null) {
       instance = instanceBuilder(container);
+      instanceBuilder = null;
     }
     return instance;
   }
