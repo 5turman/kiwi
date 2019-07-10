@@ -15,50 +15,32 @@ class Container {
 
   /// Registers an instance into the container.
   ///
-  /// An instance of type [T] can be registered with a
-  /// supertype [S] if specified.
-  ///
   /// If [name] is set, the instance will be registered under this name.
   /// To retrieve the same instance, the same name should be provided
   /// to [Container.resolve].
-  void registerInstance<S, T extends S>(
-    S instance, {
-    String name,
-  }) {
+  void registerInstance<T>(T instance, {String name}) {
     assert(instance != null);
-    final provider = _Provider<S>.singleton((container) => instance);
+    final provider = _Provider<T>.singleton((container) => instance);
     _setProvider(name, provider);
   }
 
   /// Registers a factory into the container.
   ///
-  /// A factory returning an object of type [T] can be registered with a
-  /// supertype [S] if specified.
-  ///
   /// If [name] is set, the factory will be registered under this name.
   /// To retrieve the same factory, the same name should be provided
   /// to [Container.resolve].
-  void registerFactory<S, T extends S>(
-    Factory<S> factory, {
-    String name,
-  }) {
-    _setProvider(name, _Provider<S>.factory(factory));
+  void registerFactory<T>(Factory<T> factory, {String name}) {
+    _setProvider(name, _Provider<T>.factory(factory));
   }
 
   /// Registers a factory that will be called only only when
   /// accessing it for the first time, into the container.
   ///
-  /// A factory returning an object of type [T] can be registered with a
-  /// supertype [S] if specified.
-  ///
   /// If [name] is set, the factory will be registered under this name.
   /// To retrieve the same factory, the same name should be provided
   /// to [Container.resolve].
-  void registerSingleton<S, T extends S>(
-    Factory<S> factory, {
-    String name,
-  }) {
-    _setProvider(name, _Provider<S>.singleton(factory));
+  void registerSingleton<T>(Factory<T> factory, {String name}) {
+    _setProvider(name, _Provider<T>.singleton(factory));
   }
 
   /// Removes the entry previously registered for the type [T].
